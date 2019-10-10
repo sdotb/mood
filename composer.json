@@ -1,0 +1,20 @@
+{
+    "name": "sdotb/mood",
+    "description": "Mood Api Framework",
+    "require": {
+        "sdotb/utils": "^1.0",
+        "sdotb/tad-core": "^0.5"
+    },
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Stefano Bertoli",
+            "email": "s.bertoli@ictec.it"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "SdotB\\Mood\\": "src/Mood"
+        }
+    }
+}

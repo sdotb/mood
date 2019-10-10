@@ -1,0 +1,91 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "7ec775eec1f9bd885db58995b54ee793",
+    "packages": [
+        {
+            "name": "sdotb/tad-core",
+            "version": "0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sdotb/tad-core.git",
+                "reference": "6303afa4ad1dafd223a6a178c9d2104a70c2a56e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sdotb/tad-core/zipball/6303afa4ad1dafd223a6a178c9d2104a70c2a56e",
+                "reference": "6303afa4ad1dafd223a6a178c9d2104a70c2a56e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3",
+                "sdotb/utils": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SdotB\\TADCore\\": "src/TADCore"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Stefano Bertoli",
+                    "email": "s.bertoli@ictec.it"
+                }
+            ],
+            "description": "TAD Backend implementation",
+            "time": "2019-10-10T17:21:24+00:00"
+        },
+        {
+            "name": "sdotb/utils",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sdotb/utils.git",
+                "reference": "c5387b7137b938b103cbba52c77531df8fca00a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sdotb/utils/zipball/c5387b7137b938b103cbba52c77531df8fca00a4",
+                "reference": "c5387b7137b938b103cbba52c77531df8fca00a4",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SdotB\\Utils\\": "src/Utils"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stefano Bertoli",
+                    "email": "s.bertoli@ictec.it"
+                }
+            ],
+            "description": "Utils for projects",
+            "time": "2019-10-04T21:27:42+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

@@ -1,0 +1,4 @@
+.DS_*
+.vscode
+Thumbs.db
+/vendor/
