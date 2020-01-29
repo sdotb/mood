@@ -30,10 +30,10 @@ abstract class Mold extends Mood {
     public function permittedActions(): array
     {
         $actions = [
-            "getList",
             "create",
             "edit",
             "delete",
+            "getList",
             "search",
             "tableCreate",
             "tableEmpty",
@@ -46,6 +46,11 @@ abstract class Mold extends Mood {
         }
         sort($actions);
         return $actions;
+    }
+
+    public function actions(): array
+    {
+        return [];
     }
 
     public function __actions(): array
@@ -77,35 +82,6 @@ abstract class Mold extends Mood {
     protected final function __importFe(array $data, string $action = ''): array
     {
         switch ($action) {
-            case 'create':
-                foreach ($data as $fieldkey => $fieldvalue) {
-                    switch ($fieldkey) {
-                        case "email":
-                            //  Impedisco la modifica della mail, per quella serve verifica e 2 passaggi come per registrazione
-                            if (!empty($fieldvalue)) {
-                                if (filter_var($fieldvalue, FILTER_VALIDATE_EMAIL) === false) {
-                                    throw new MoodException("invalid email address", 0);
-                                }
-                            }
-                            break;
-                        case "password":
-                            $data[$fieldkey] = hash('sha512', $fieldvalue);
-                            break;
-                        default:
-                            //  Parsing predefinito per tutti i campi
-                            break;
-                    }
-                }
-                break;
-            case 'edit':
-                foreach ($data as $fieldkey => $fieldvalue) {
-                    switch ($fieldkey) {
-                        default:
-                            //  Parsing predefinito per tutti i campi
-                            break;
-                    }
-                }
-                break;
             default:
                 # none applied
                 break;
@@ -193,6 +169,25 @@ abstract class Mold extends Mood {
         return $this->ayOutput;
     }
 
+    /**
+     * Testing: not implemented final "__" version of method like __importFe
+     * here apply filter if fields need to be parsed everywhere for my project
+     * i.e. want to validate email field in all entities extended over Mold,
+     * in child instance i will implement "local" filter and inside Mold::createFilterData
+     * only if I need to apply de default filtering implemented here
+     */
+    protected function createFilterData($data): array
+    {
+        foreach ($data as $fieldkey => $fieldvalue) {
+            switch ($fieldkey) {
+                default:
+                    // Parsing for unmatching fields
+                    break;
+            }
+        }
+        return $data;
+    }
+
     protected function createUnit(array $data, array $opt): array
     {
         return $this->__createUnit($data, $opt);
@@ -212,6 +207,7 @@ abstract class Mold extends Mood {
         try {
             // filtro l'oggetto e ne copnverto le chiavi
             $data = $this->remapFilter($data, $opt['mapFilters']['in']);
+
             // verifico campi richiesti
             $ayRequiredField = [];
             foreach ($opt['mapFilters']['requiredFields'] as $key => $value) {
@@ -229,16 +225,19 @@ abstract class Mold extends Mood {
             
             // Garantisco univocità in fase di creazione, per ora appogiata a logica DB
             $code = $opt['creationPrefix'].Utils::mTS();
+            $i = 0;
             while ($this->db->insert($this->tblName, array($this->mapIntDb["cod"] => $code)) == false) {
                 ++$code;
+                if(++$i >= $this->opt['createMaxAttempts']) throw new MoodException("create: maximum attempts reached, retry", 500);
             }
+
             //  Importo i dati convertendoli dove necessario prima di scriverli in Db
-            $data = $this->importFe($data,'create');
+            $data = $this->createFilterData($data);
 
             /**
              * Lascio interna allo UW la rimappatura/filtro dei dati che vanno scritti in db, di fatto mantengo tutti quelli permessi in ingresso e appendo lastedit e status
              * estrarla nell'AD non sarebbe molto vantaggioso, se ad esempio appendessi un nuovo campo dovrei anche implementare l'aggiunta internamente all'UW (quindi override)
-             * se devo fare override dell'UW tantovale implementare internamente anche il filtro relato a queste logiche
+             * se devo fare override dell'UW tantovale implementare internamente anche il filtro relativo a queste logiche
              */
             $data['lastedit'] = date("Y-m-d H:i:s");
             $data['status'] = 1;
@@ -354,6 +353,18 @@ abstract class Mold extends Mood {
         return $this->ayOutput;
     }
 
+    protected function editFilterData($data): array
+    {
+        foreach ($data as $fieldkey => $fieldvalue) {
+            switch ($fieldkey) {
+                default:
+                    // Parsing for unmatching fields
+                    break;
+            }
+        }
+        return $data;
+    }
+
     protected function editUnit(array $data, array $opt): array
     {
         return $this->__editUnit($data, $opt);
@@ -386,7 +397,7 @@ abstract class Mold extends Mood {
                 throw new MoodException("cannot be empty:".$requiredFields, 401);
             }
             //  Importo i dati convertendoli dove necessario prima di scriverli in Db
-            $data = $this->importFe($data,'edit');
+            $data = $this->editFilterData($data);
 
             //  Appendo valori ulteriori
             $data['lastedit'] = date("Y-m-d H:i:s");

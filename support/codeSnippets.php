@@ -217,20 +217,36 @@ class Example extends Mood {
 
 /**
  * Some Required Fields inside uw
+ * can be empty
  */
 
-$ayRequired = [];
+$ayRequiredFields = [];
 foreach ($opt['mapFilters']['requiredFields'] as $key => $value) {
-    if (empty($data[$key])) {
-        $ayRequired[$value] = $value;
+    if (!isset($data[$key])) {
+        $ayRequiredFields[$value] = $value;
     }
 }
-if (!empty($ayRequired)) {
-    sort($ayRequired);
+if (!empty($ayRequiredFields)) {
+    sort($ayRequiredFields);
     //  Stampa dei campi richiesti
-    $requiredFields = " ".implode(', ',array_values($ayRequired));
-    $requiredFields = substr($requiredFields, 0, -2);
-    throw new \Exception("missing required field:".$requiredFields, 401);
+    $requiredFields = " ".implode(', ',array_values($ayRequiredFields));
+    throw new \Exception("missing required field:".$requiredFields, 500);
+}
+
+/**
+ * Some required non empty field inside uw
+ */
+$ayEmptyFields = [];
+foreach ($opt['mapFilters']['notEmptyFields'] as $key => $value) {
+    if (isset($data[$key]) AND empty($data[$key])) {
+        $ayEmptyFields[$value] = $value;
+    }
+}
+if (!empty($ayEmptyFields)) {
+    sort($ayEmptyFields);
+    //  Stampa dei campi richiesti mancanti, con MoodException potrei restituire l'oggetto
+    $emptyFields = " ".implode(', ',array_values($ayEmptyFields));
+    throw new MoodException("cannot be empty:".$emptyFields, 500, null, $ayEmptyFields);
 }
 
 /**
@@ -303,6 +319,7 @@ if ($res === false) {
 
 /**
  * Valutare nella view
+ * KO: sempre array per coerenza
  */
 if (!empty($res[0]['cod'])) {
     $res = $res[0];

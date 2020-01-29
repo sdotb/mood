@@ -106,7 +106,7 @@ class DB extends \PDO {
 
     public function insert($table, $info) {
         $fields = $this->filter($table, $info);
-        $sql = "INSERT INTO " . $table . " (" . implode($fields, ", ") . ") VALUES (:" . implode($fields, ", :") . ");";
+        $sql = "INSERT INTO " . $table . " (" . implode( ", ", $fields) . ") VALUES (:" . implode(", :", $fields) . ");";
         $bind = [];
         foreach($fields as $field)
             $bind[":$field"] = $info[$field];

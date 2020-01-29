@@ -30,6 +30,7 @@ abstract class Mood //implements iMoodMaps
         'buildSession' => false,
         'dbRequested' => false,
         'sessionDuration' => 7200,
+        'createMaxAttempts' => 1000,
     ];
     protected $store = [];
     protected $ayOutput = [];

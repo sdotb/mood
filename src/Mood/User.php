@@ -7,6 +7,7 @@ namespace SdotB\Mood;
  *  in modo che nella classe estesa basta definire l'azione "_unit" (permettendo così di chiamarla col nome senza unit)
  *  Potrebbe però darsi che questa è la configurazione ottimale senza dover stravolgere il tutto... da valutare
  */
+use SdotB\Utils\Utils;
 
 class User extends Mold {
 
@@ -21,7 +22,7 @@ class User extends Mold {
         'password' => ['password'],
         'permissions' => ['permissions'],
         'statusfe' => ['status'],
-        'username' => ['userName']
+        'username' => ['userName'],
     ];
 
     public function actions(): array
@@ -38,7 +39,8 @@ class User extends Mold {
     }
 
     //  DEFINIZIONE DELLE AZIONI ESEGUIBILI ------------------------------------
-    public function create(array $ay_data, array $params = []): array {
+    public function create(array $ay_data, array $params = []): array
+    {
         try {
             $params = $this->parseParams($params);
             if (!$this->mysesExtend($params['callFrom'])) {
@@ -71,7 +73,31 @@ class User extends Mold {
         return $this->ayOutput;
     }
 
-    public function edit(array $ay_data, array $params = []): array {
+    protected function createFilterData($data): array
+    {
+        foreach ($data as $fieldkey => $fieldvalue) {
+            switch ($fieldkey) {
+                case "email":
+                    //  Impedisco la modifica della mail, per quella serve verifica e 2 passaggi come per registrazione
+                    if (!empty($fieldvalue)) {
+                        if (filter_var($fieldvalue, FILTER_VALIDATE_EMAIL) === false) {
+                            throw new MoodException("invalid email address", 0);
+                        }
+                    }
+                    break;
+                case "password":
+                    $data[$fieldkey] = hash('sha512', $fieldvalue);
+                    break;
+                default:
+                    // Parsing for unmatching fields
+                    break;
+            }
+        }
+        return $data;
+    }
+
+    public function edit(array $ay_data, array $params = []): array
+    {
         try {
             $params = $this->parseParams($params);
             if (!$this->mysesExtend($params['callFrom'])) {
@@ -94,7 +120,7 @@ class User extends Mold {
                 [], 
                 []
             );
-            foreach ($ayData as $data) {
+            foreach ($ay_data as $data) {
                 $this->ayOutput[] = $this->editUnit($data, $opt);
             }
         } catch (MoodException $e) {
@@ -103,7 +129,20 @@ class User extends Mold {
         return $this->ayOutput;
     }
 
-    public function getList(array $ay_data, array $params = []): array {
+    protected function editFilterData($data): array
+    {
+        foreach ($data as $fieldkey => $fieldvalue) {
+            switch ($fieldkey) {
+                default:
+                    // Parsing for unmatching fields
+                    break;
+            }
+        }
+        return $data;
+    }
+
+    public function getList(array $ay_data, array $params = []): array
+    {
         try {
             $params = $this->parseParams($params);
             if (!$this->mysesExtend($params['callFrom'])) {
@@ -149,7 +188,8 @@ class User extends Mold {
         return $this->ayOutput;
     }
 
-    public function login(array $ay_data, array $params = []): array {
+    public function login(array $ay_data, array $params = []): array
+    {
         try {
             $this->sessionDestroyIfExist();
             $params = $this->parseParams($params);
@@ -178,7 +218,8 @@ class User extends Mold {
         return $this->ayOutput;
     }
 
-    protected function loginUnit(array $data, array $opt): array {
+    protected function loginUnit(array $data, array $opt): array
+    {
         $unitOutput = [];
         try {
             $data = $this->remapFilter($data, $opt['mapFilters']['in']);
@@ -243,7 +284,8 @@ class User extends Mold {
         return $unitOutput;
     }
 
-    public function logout(): array {
+    public function logout(): array
+    {
         try {
             if ($this->tk == "") {
                 if ($this->session instanceof DBSession) {
@@ -268,7 +310,8 @@ class User extends Mold {
         return $this->ayOutput;
     }
 
-    public function register(array $ay_data, array $params = []) {
+    public function register(array $ay_data, array $params = []): array
+    {
         try {
             /**
              * Per far registrare utente non serve una sessione, non implemento nessun controllo,
@@ -291,7 +334,7 @@ class User extends Mold {
                 ['username','password']
             );
             $opt['creationPrefix'] = "US";
-            foreach ($ayData as $data) {
+            foreach ($ay_data as $data) {
                 $this->ayOutput[] = $this->registerUnit($data, $opt);
             }
         } catch (MoodException $e) {
@@ -392,7 +435,7 @@ class User extends Mold {
                 ['id','password','timestamp','status'],
                 []
             );
-            foreach ($ayData as $data) {
+            foreach ($ay_data as $data) {
                 $this->ayOutput[] = $this->searchUnit($data, $opt);
             }
         } catch (MoodException $e) {

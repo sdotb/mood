@@ -1,5 +1,5 @@
 <?php
-namespace  Mood;
+namespace  SdotB\Mood;
 //  Implementare una classe che mi ritorna l'istanza della classe che mi serve (Mysql, Postgres, sqlite) in base alla connessione al db... FACTORY??
 
 /**
@@ -156,7 +156,7 @@ class TableManagerMysql extends TableManager {
 
     protected function tableTruncate ($tblName) {
         if ($this->driverType != 'mysql') throw new MoodException(__METHOD__." ## DB type not managed from this class for ".$this->driverType, 1); //  Nella Construct????
-        $res = $this->db->run("TRUNCATE TABLE IF EXISTS `".$tableName."`;");
+        $res = $this->db->run("TRUNCATE TABLE IF EXISTS `".$tblName."`;");
         if ($res == true) {
             return ["status"=>"OK","data"=>["truncate"=>(string)$res]];
         } else {
