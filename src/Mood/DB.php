@@ -1,6 +1,8 @@
 <?php
 namespace SdotB\Mood;
 
+use SdotB\Mood\MoodException;
+
 class DB extends \PDO {
     private $error;
     private $sql;
@@ -58,6 +60,8 @@ class DB extends \PDO {
                 $msg .= "SQL Error\n" . str_repeat("-", 50);
                 foreach($error as $key => $val)
                     $msg .= "\n\n$key:\n$val";
+            } else {
+                throw new MoodException("Error Processing Request", 500, null, ['error'=>$error]);
             }
 
             $func = $this->errorCallbackFunction;
